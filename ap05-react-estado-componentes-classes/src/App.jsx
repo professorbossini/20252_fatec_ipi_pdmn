@@ -96,8 +96,8 @@ class App extends React.Component{
       <div className="container mt-2">
         <div className="row">
           <div className="col-12">
-            <Gato tamanho="2"/>
-            <Gato tamanho="2" direcao="horizontal" />
+            <Gato tamanho="3"/>
+            <Gato tamanho="3" direcao="horizontal" />
           </div>
         </div>
         {/* .card>.card-body */}
@@ -105,7 +105,7 @@ class App extends React.Component{
           <div className="col-12">
             {
               (!this.state.latitude && !this.state.mensagemDeErro) ?
-                <Loading />
+                <Loading texto='Por favor, libere o acesso à sua localização.'/>
               :
               this.state.mensagemDeErro ?
               // p.border.rounded.p-2.fs-1.text-center
