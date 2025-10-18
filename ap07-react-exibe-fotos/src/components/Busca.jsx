@@ -19,6 +19,7 @@ export default class Busca extends Component {
 
   onFormSubmit = (evento) => {
     evento.preventDefault()  
+    this.props.onBuscaRealizada(this.state.termoDeBusca)
   }
 
   render() {
