@@ -1,5 +1,8 @@
 import {
+  Alert,
   Button,
+  FlatList,
+  Linking,
   Pressable,
   StyleSheet, 
   Text, 
@@ -7,6 +10,8 @@ import {
   View 
 } from 'react-native';
 import { useState } from 'react'
+import AntIcon from '@expo/vector-icons/AntDesign';
+
 
 interface Lembrete{
   id: string;
@@ -18,13 +23,40 @@ export default function App() {
   const [lembretes, setLembretes] = useState<Lembrete[]>([])
 
   const adicionar = () => {
-    //construir um objeto lembrete com o id sendo a data atual do sistema e o texto sendo o que existe na variavel de estado lembrete
-    const novoLembrete: Lembrete = {
-      id: new Date().getTime().toString(),
-      texto: lembrete
+    if(lembrete.length > 0){
+      const novoLembrete: Lembrete = {
+        id: new Date().getTime().toString(),
+        texto: lembrete.trim()
+      }
+      setLembretes((listaAtual) => [ novoLembrete, ...listaAtual])
+      setLembrete('')
     }
-    setLembretes((listaAtual) => [ novoLembrete, ...listaAtual])
-    setLembrete('')
+  }
+
+  const remover = (lembreteARemover: Lembrete) => {
+    // Alert.alert(
+    //   // título
+    //   'Remover lembrete',
+    //   // mensagem principal
+    //   `Deseja mesmo remover o seguinte lembrete? ${lembreteARemover.texto}`,
+    //   // coleção de botões
+    //   [
+    //     {
+    //       text: 'Cancelar',
+    //       style: 'cancel'
+    //     },
+    //     {
+    //       text: 'Remover',
+    //       style: 'destructive',
+    //       onPress: () => {
+    //         setLembretes((lembretesAtual: Lembrete[]) => {
+    //           return lembretesAtual.filter((l: Lembrete) => l.id !== lembreteARemover.id) 
+    //         })
+    //       }
+    //     }
+    //   ]
+    // )
+    setLembretes(lembretesAual => (lembretesAual.filter(l => l.id !== lembreteARemover.id)))
   }
   return (
     <View style={styles.container}>
@@ -42,9 +74,38 @@ export default function App() {
         <Text style={styles.buttonText}>Salvar lembrete</Text>
       </Pressable>
       {/* usar a função map, para mostrar cada lembrete usando um Text */}
-      {
-        lembretes.map(l => <Text>{l.texto}</Text>)
-      }
+      <FlatList 
+        style={styles.list}
+        keyExtractor={(l) => l.id}
+        data={lembretes}
+        renderItem={(l) => {
+          return (
+            <View
+              style={styles.listItem}>
+              <Text style={styles.listItemText}>
+                  {l.item.texto}
+              </Text>
+              <View style={styles.listItemButtons}>
+                <Pressable onPress={() => remover(l.item)}>
+                  <AntIcon name='delete' size={24}/>
+                </Pressable>
+                <Pressable>
+                  <AntIcon name='edit' size={24}/>
+                </Pressable>
+              </View>
+
+            </View>
+          )
+        }}
+        ItemSeparatorComponent={() => (<View style={{marginVertical: 2}}></View>)}
+        ListEmptyComponent={() => <Text style={{textAlign: 'center'}}>Não temos lembretes ainda.</Text>}
+      />
+      <View style={styles.footer}>
+        <Pressable
+          onPress={() => Linking.openURL('https://github.com/professorbossini')}>
+          <AntIcon name='github' size={24} />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -55,6 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 12,
   },
   input: {
     width: '80%',
@@ -74,5 +136,72 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  list: {
+    width: '80%',
+    borderColor: '#DDD',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 12,
+    padding: 8
+  },
+  listItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#CCC',
+    borderRadius: 4,
+    backgroundColor: '#F0F0F0',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  listItemText: {
+    textAlign: 'center',
+    width: '70%'
+  },
+  footer: {
+    borderColor: '#DDD',
+    borderWidth: 1,
+    width: '80%',
+    alignItems: 'center',
+    padding: 12,
+    marginTop: 8,
+    borderRadius: 4
+  },
+  listItemButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '30%',
+    // borderWidth: 1,
+    // borderColor: 'black'
   }
 });
+/*
+[
+  {
+    id: 1,
+    texto: abc
+  },
+  {
+    id: 2,
+    texto: bbb
+  }
+]
+*/
+/*
+[
+  {
+    item: {
+      id: 1,
+      texto: abc
+    }
+  },
+  {
+    item: {
+      id: 1,
+      texto: 
+    }
+  }
+]
+
+*/
+
